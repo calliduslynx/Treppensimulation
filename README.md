@@ -1,0 +1,1 @@
+Kleines Hilfs-JS, um die Beugung einer Treppe zu simulieren
