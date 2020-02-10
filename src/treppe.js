@@ -101,7 +101,7 @@ function zeichneOriginalStufen(ueberspringeErsteNStufen) {
 
 // ***** Treppe original
 if (false) {
-  chartArea.setColor("lightpink")
+  chartArea.setColor("yellow")
   zeichneOriginalStufen(0)
 }
 
@@ -130,23 +130,23 @@ if (true) {
 
 
   //         #1  #2  #3  #4  #5  #6  #7  #8  #9  #10 (#11)
-  var v = 4
+  var v = 5
 
   if (v == 1) { // alle gerade
-    var l = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]
-    var r = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]
+    var l = [0,20, 40, 60, 80, 100, 120, 140, 160, 180, 200]
+    var r = [0,20, 40, 60, 80, 100, 120, 140, 160, 180, 200]
   } else if (v == 2) { // simpler schwung
-    var l = [20, 20, 20, 23, 26, 29, 31, 45, 60, 110]
-    var r = [20, 20, 20, 17, 14, 11, 9, 7, 6, 5]
+    var l = [0,20, 40, 60, 83, 109, 138, 169, 214, 274, 384]
+    var r = [0,20, 40, 60, 77, 91, 102, 111, 118, 124, 129]
   } else if (v == 3) { // schwung, gute Mittelbreite 1
-    var l = [18, 18, 18, 19, 22, 25, 27, 34, 46, 110]
-    var r = [18, 18, 18, 17, 14, 11, 9, 7, 6, 5]
+    var l = [0,18, 36, 54, 73, 22, 25, 27, 34, 46, 110]
+    var r = [0,18, 36, 54, 71, 14, 11, 9, 7, 6, 5]
   } else if (v == 4) { // schwung, gute Mittelbreite, von unten gedreht, zu eng
-    var l = [21, 21.5, 22, 22.5, 23, 23.5, 25, 28, 45, 100]
-    var r = [15, 14.5, 14, 13.5, 13, 12.5, 12, 11.5, 11, 10.5]
-  } else if (v == 5) { // ???
-    var l = [21, 21.5, 22, 22.5, 23, 23.5, 25, 28, 45, 100]
-    var r = [15, 14.5, 14, 13.5, 13, 12.5, 12, 11.5, 11, 10.5]
+    var l = [0,21, 42.5, 64.5, 87, 110, 133.5, 158.5, 186.5, 231.5, 331.5]
+    var r = [0,15, 29.5, 43.5, 57, 70, 82.5, 94.5, 106, 117, 127.5]
+  } else if (v == 5) { // unten länger, mittlere Tiefe 20.5
+    var l = [-45, -16.5, 12, 40.5, 69, 97.5, 126, 154.5, 186.5, 231.5, 331.5]
+    var r = [-5, 7.5, 20, 32.5, 45, 57.5, 70, 82.5, 95, 107.5, 120]
   }
 
 
@@ -159,8 +159,8 @@ if (true) {
     dL = dL * faktor
     dR = r[i] * faktor
 
-    cL -= dL
-    cR -= dR
+    cL = treppeLaenge - dL
+    cR = treppeLaenge - dR
 
     chartArea.setColor("green")
     chartArea.drawLine(0, cL, treppeBreite, cR - cL)
@@ -186,7 +186,8 @@ if (true) {
       +
       (newMiddlePointY - middlePointY) * (newMiddlePointY - middlePointY)
     ) / faktor
-    console.log("Mittel Stufe " + (i + 1) + ": " + distance)
+    if(i > 0)
+      console.log("Mittel Stufe " + (i) + ": " + distance)
     middlePointX = newMiddlePointX
     middlePointY = newMiddlePointY
   })
@@ -203,8 +204,8 @@ if (true) {
     (newMiddlePointY - middlePointY) * (newMiddlePointY - middlePointY)
   ) / faktor
 
-  var breiteStufe11 = (treppeLaenge/faktor) - (r[0] + r[1] + r[2] + r[3] + r[4] + r[5] + r[6] + r[7] + r[8] + r[9])
-  console.log("Mittel Stufe 11: " + distance +"   .... Breite: " + breiteStufe11)
+  // var breiteStufe11 = (treppeLaenge / faktor) - (r[0] + r[1] + r[2] + r[3] + r[4] + r[5] + r[6] + r[7] + r[8] + r[9])
+  // console.log("Mittel Stufe 11: " + distance + "   .... Breite: " + breiteStufe11)
 
 }
 
