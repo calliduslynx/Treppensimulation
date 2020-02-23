@@ -74,10 +74,8 @@ var chartArea = total.newInnerArea(50, 50, 50, 50)
 
 
 // ***** Außenmaße
-var treppeBreite = 90
+var treppeBreite = 78
 var treppeLaenge = 220
-
-
 
 // ***************************
 // ***** Treppe **************
@@ -92,23 +90,14 @@ function line(x1, y1, x2, y2, color) {
   var _x2 = x2 * faktor
   var _y2 = treppeLaenge * faktor - y2 * faktor
   chartArea.drawLine(_x1, _y1, _x2 - _x1, _y2 - _y1)
-
 }
 
 
-
 // ************* Rahmen
-line(0, 0, treppeBreite, 0, "black") // unten
-line(0, 0, 0, treppeLaenge, "black") // links
-line(0, treppeLaenge, treppeBreite, treppeLaenge, "black") // oben
-line(treppeBreite, 0, treppeBreite, treppeLaenge, "black") // rechts
-
-
-// ***** Treppe manuell
-// var cL = treppeLaenge
-// var cR = treppeLaenge
-// var middlePointX = treppeBreite / 2
-// var middlePointY = (cL + cR) / 2
+line(0, 0, treppeBreite, 0, "grey") // unten
+line(0, 0, 0, treppeLaenge, "grey") // links
+line(0, treppeLaenge, treppeBreite, treppeLaenge, "grey") // oben
+line(treppeBreite, 0, treppeBreite, treppeLaenge, "grey") // rechts
 
 
 // *********** SHOW LOGIK **********
@@ -120,6 +109,7 @@ if (showOnly > 11) location.href = "?stufe=11"
 document.addEventListener('keyup', (e) => {
   if (e.code === "ArrowDown") location.href = "?stufe=" + (showOnly - 1)
   else if (e.code === "ArrowUp") location.href = "?stufe=" + (showOnly - 1 + 2)
+  else if (e.code === "Escape") location.href = "?stufe=0"
 });
 
 // ************ DATEN ************
@@ -131,21 +121,20 @@ var neu_beginn = {
   r: [-5, 7.5, 20, 32.5, 45, 57.5, 70, 82.5, 95, 107.5, 120]
 }
 
-
-
-
-
-
-
 for (var i = 0; i < neu_beginn.l.length; i++) {
 
+  // ********* Skip - Logik
   var showAll = (showOnly < 1)
   if (!showAll && showOnly != i + 1) continue
 
+
+  // ********* Zeichen - neue Stufe
   neu_beginn_l = neu_beginn.l[i]
   neu_beginn_r = neu_beginn.r[i]
   line(0, neu_beginn_l, treppeBreite, neu_beginn_r, "red")    // Neue Stufe
 
+
+  // ********* Zeichen - alte Stufe
   alt_beginn = alt_beginnArr[i]
   alt_ende = alt_endeArr[i]
   line(0, alt_beginn, treppeBreite, alt_beginn, "yellow")
@@ -157,64 +146,55 @@ for (var i = 0; i < neu_beginn.l.length; i++) {
   if (!showAll) line(0, neu_beginn_l, 0, alt_ende, "red")
   if (!showAll) line(treppeBreite, neu_beginn_r, treppeBreite, alt_ende, "red")
 
+
+  // ********* Ausgabe der Werte
   console.log("====== Stufe " + (i + 1) + " ======")
   var _l = alt_ende - neu_beginn_l
   var _r = alt_ende - neu_beginn_r
+  var _a = (_l + _r) / 2 * treppeBreite / 10000
 
-  console.log("Links : " + _l.toFixed(1) + "   Rechts : " + _r.toFixed(1) + (_l < 0 ? "    ! Achtung Dreieck !" : ""))
-
-
-
-  // cL = treppeLaenge - dL
-  // cR = treppeLaenge - dR
+  console.log("Links : " + _l.toFixed(1) + "   Rechts : " + _r.toFixed(1) + "        " + (_l < 0 ? "! Achtung Dreieck !" : "Fläche : " + _a.toFixed(3) + "m²"))
 
 
+  // ********* Mittlere Tiefe
+  if (i >= 8) continue
 
-  // // draw middle line
-  // if (cL > 0) {
-  //   var newMiddlePointX = treppeBreite / 2 // TODO recalculate
-  //   var newMiddlePointY = (cL + cR) / 2
-  // } else {
-  //   var x2 = treppeBreite / ((-cL / cR) + 1)
-  //   var x1 = treppeBreite - x2
+  /** liefert Mittelpunkt vom Stufenbeginn (x,y) für Stufe i */
+  var calculateXY = function (ii) {
+    var __l = neu_beginn.l[ii]
+    var __r = neu_beginn.r[ii]
+    if (__l < treppeLaenge) {
+      return {
+        x: treppeBreite / 2,
+        y: (__l + __r) / 2
+      }
+    } else {
+      var x2 = treppeBreite / ((-__l / __r) + 1)
+      var x1 = treppeBreite - x2
 
-  //   var newMiddlePointX = x2 / 2 + x1
-  //   var newMiddlePointY = cR / 2
-  // }
+      return {
+        x: x2 / 2 + x1,
+        y: __r / 2
+      }
+    }
+  }
 
-  // chartArea.setColor("lightPink")
-  // chartArea.drawLine(middlePointX, middlePointY, newMiddlePointX - middlePointX, newMiddlePointY - middlePointY)
 
-  // var distance = Math.sqrt(
-  //   (newMiddlePointX - middlePointX) * (newMiddlePointX - middlePointX)
-  //   +
-  //   (newMiddlePointY - middlePointY) * (newMiddlePointY - middlePointY)
-  // ) / faktor
+  var middleBeginn = calculateXY(i)
+  var middleEnd = calculateXY(i + 1)
 
-  // console.log("==== Stufe " + (i + 1) + " =====")
-  // console.log("original von: ")
-  // console.log("original bis: ")
+  line(middleBeginn.x, middleBeginn.y, middleEnd.x, middleEnd.y, "lightgreen")
+  if (!showAll) line(middleBeginn.x, middleBeginn.y, middleEnd.x, middleEnd.y, "green")
+  if (!showAll) line(0, neu_beginn.l[i + 1], treppeBreite, neu_beginn.r[i + 1], "lightgreen")    // Neue Stufe
 
-  // if (i > 0)
-  //   console.log("Mittel Stufe " + (i) + ": " + distance)
-  // middlePointX = newMiddlePointX
-  // middlePointY = newMiddlePointY
+  var distance = Math.sqrt(
+    (middleEnd.x - middleBeginn.x) * (middleEnd.x - middleBeginn.x)
+    +
+    (middleEnd.y - middleBeginn.y) * (middleEnd.y - middleBeginn.y)
+  )
+
+  console.log("Tiefe im Mittel " + (i) + ": " + distance)
 }
-
-// var newMiddlePointX = treppeBreite
-// var newMiddlePointY = cR / 2
-
-// chartArea.setColor("lightPink")
-// chartArea.drawLine(middlePointX, middlePointY, newMiddlePointX - middlePointX, newMiddlePointY - middlePointY)
-
-// var distance = Math.sqrt(
-//   (newMiddlePointX - middlePointX) * (newMiddlePointX - middlePointX)
-//   +
-//   (newMiddlePointY - middlePointY) * (newMiddlePointY - middlePointY)
-// ) / faktor
-
-// var breiteStufe11 = (treppeLaenge / faktor) - (r[10])
-// console.log("Mittel Stufe 11: " + distance + "   .... Breite: " + breiteStufe11)
 
 
 var whiteArea = total.newInnerArea(0, 0, 0, total.height - 50)
